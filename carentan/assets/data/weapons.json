@@ -1,0 +1,8 @@
+{
+    "rifler": {
+        "main_weapon": "M1 Garand",
+        "texture": "anim_garand",
+        "fireRate": 45,
+        "damage": 50
+    }
+}
