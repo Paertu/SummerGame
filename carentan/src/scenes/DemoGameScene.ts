@@ -11,10 +11,12 @@ export class DemoGameScene extends Phaser.Scene {
     preload() {
         this.load.image('grass', 'assets/grass.png');
         this.load.image('soldier', 'assets/soldier.jpg');
-        this.load.image('soldier2', 'assets/soldier2.png');
-        this.load.image('soldier3', 'assets/soldier3.png');
-        this.load.image('rifler', 'assets/m1garand.png');
-        this.load.image('submachinegunner', 'assets/thompson.png');
+
+        this.load.image('bodyTexture', 'assets/sprites/units/alliedUnits/allied_soldier_torso_1.png');
+        this.load.image('headTexture', 'assets/sprites/units/alliedUnits/allied_soldier_head_1.png');
+
+        this.load.image('rifler', 'assets/sprites/weapons/m1garand.png');
+        this.load.image('submachinegunner', 'assets/sprites/weapons/thompson.png');
     }
 
     create() {
@@ -23,9 +25,8 @@ export class DemoGameScene extends Phaser.Scene {
         this.squadMembers = new Squad(this);
 
         this.squadMembers.spawn([
-            { x: 960, y: 540, texture: 'soldier', name: "Jade", kit: "rifler", health: 100 },
-            { x: 760, y: 540, texture: 'soldier2', name: "Foley", kit: "submachinegunner", health: 100},
-            { x: 460, y: 540, texture: 'soldier3', name: "Kalash", kit: "rifler", health: 100 }
+            { x: 960, y: 540, bodyTexture: 'bodyTexture', headTexture: 'headTexture', name: "Foley", kit: "rifler", health: 25 },
+            { x: 960, y: 540, bodyTexture: 'bodyTexture', headTexture: 'headTexture', name: "Emily", kit: "submachinegunner", health: 100 },
         ]);
     }
 

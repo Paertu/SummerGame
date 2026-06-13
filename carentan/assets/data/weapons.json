@@ -2,7 +2,15 @@
     "rifler": {
         "main_weapon": "M1 Garand",
         "texture": "anim_garand",
-        "fireRate": 45,
-        "damage": 50
+        "fireRate": 1,
+        "damage": 80,
+        "ammo": 8
+    },
+        "submachinegunner": {
+        "main_weapon": "Thompson",
+        "texture": "anim_thompson",
+        "fireRate": 5,
+        "damage": 20,
+        "ammo": 31
     }
 }

@@ -29,7 +29,7 @@ export class Squad {
         this.squadMembers = [];
 
         spawnData.forEach((data) => {
-            let soldier =  new Soldier(this.scene, data.x, data.y, data.texture, data.name, data.kit, data.health);
+            let soldier =  new Soldier(this.scene, data.x, data.y, data.bodyTexture, data.headTexture, data.name, data.kit, data.health);
             this.squadMembers.push(soldier);
         });
     }
@@ -49,8 +49,8 @@ export class Squad {
         const pointer = this.scene.input.activePointer;
         currentCharacter.rotateTowards(pointer.worldX, pointer.worldY);
 
-        currentCharacter.healthCheck;
-        console.log(currentCharacter.healthCheck);
+        currentCharacter.updateHealthVisuals();
+        console.log(currentCharacter.updateHealthVisuals);
 
         if (this.scene.input.activePointer.isDown) {
             currentCharacter.shoot();
