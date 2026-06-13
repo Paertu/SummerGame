@@ -1,8 +1,9 @@
 import Phaser from "phaser";
+import { Soldier } from "./Soldier";
 
 export class Squad {
     private scene: Phaser.Scene;
-    private squadMembers: Phaser.GameObjects.Container[] =[]
+    private squadMembers: Soldier[] =[]
     private activeCharacterIndex: number = 0;
     private actionKeys: {
       W: Phaser.Input.Keyboard.Key;
@@ -24,26 +25,12 @@ export class Squad {
           }) as any;
     }
 
-    public spawn(spawnData: Array<{x: number, y: number, texture: string, scale: number, name: string}>) {
+    public spawn(spawnData: any[]) {
         this.squadMembers = [];
-        this.activeCharacterIndex = 0;
 
         spawnData.forEach((data) => {
-            let unitSprite = this.scene.add.sprite(0, 0, data.texture);
-            unitSprite.setScale(data.scale);
-            unitSprite.setOrigin(0.5, 0.5);
-
-            let unitNameCard = this.scene.add.text(0, unitSprite.displayHeight / 2 + 10, data.name, {
-            fontSize: '16px',
-            color: '#ffffff'
-            }).setOrigin(0.5);
-
-            let playerContainer = this.scene.add.container(data.x, data.y, [unitSprite, unitNameCard]);
-
-            this.scene.physics.add.existing(playerContainer);
-
-            console.log(`[SQUAD INITIALIZATION] Initialized squad member ${data.name}`)
-            this.squadMembers.push(playerContainer);
+            let soldier =  new Soldier(this.scene, data.x, data.y, data.texture, data.name, data.kit, data.health);
+            this.squadMembers.push(soldier);
         });
     }
 
@@ -59,6 +46,16 @@ export class Squad {
         let currentCharacter = this.squadMembers[this.activeCharacterIndex];
         if (!currentCharacter) return;
     
+        const pointer = this.scene.input.activePointer;
+        currentCharacter.rotateTowards(pointer.worldX, pointer.worldY);
+
+        currentCharacter.healthCheck;
+        console.log(currentCharacter.healthCheck);
+
+        if (this.scene.input.activePointer.isDown) {
+            currentCharacter.shoot();
+        }
+
         let body = currentCharacter.body as Phaser.Physics.Arcade.Body;
     
         body.setVelocity(0);
