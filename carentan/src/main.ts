@@ -11,6 +11,27 @@ let actionKeys: {
   CHARSWAP: Phaser.Input.Keyboard.Key;
 }
 
+var MainMenuScene = {
+  key: 'MainMenuScene',
+  create: function(this: Phaser.Scene) {
+    this.cameras.main.setBackgroundColor('#000000');
+
+    this.add.text(960, 450, "CARENTAN", { fontSize: '96px' }).setOrigin(0.5);
+    this.add.text(960, 600, "Press Any Key To Start", { fontSize: '64px' }).setOrigin(0.5);
+
+    this.input.keyboard!.once('keydown', () => {
+      this.scene.start('DemoGameScene');
+    });
+  }
+};
+
+var DemoGameScene = {
+  key: 'DemoGameScene',
+  preload: preload,
+  create: create,
+  update: update
+}
+
 var carentanConfig = {
   type: Phaser.AUTO,
   width: 1920,
@@ -21,11 +42,7 @@ var carentanConfig = {
       gravity: { y:0, x:0 },
     }
   },
-  scene: {
-    preload: preload,
-    create: create,
-    update: update
-  }
+  scene: [ MainMenuScene, DemoGameScene ]
 };
 
 var carentanGame = new Phaser.Game(carentanConfig);
