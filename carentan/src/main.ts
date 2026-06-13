@@ -1,22 +1,27 @@
-import { invoke } from "@tauri-apps/api/core";
+import Phaser from "phaser";
 
-let greetInputEl: HTMLInputElement | null;
-let greetMsgEl: HTMLElement | null;
-
-async function greet() {
-  if (greetMsgEl && greetInputEl) {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    greetMsgEl.textContent = await invoke("greet", {
-      name: greetInputEl.value,
-    });
+var carentanConfig = {
+  type: Phaser.AUTO,
+  width: 1920,
+  height: 1080,
+  scene: {
+    preload: preload,
+    create: create,
+    update: update
   }
+};
+
+var carentanGame = new Phaser.Game(carentanConfig);
+
+function preload(this: Phaser.Scene) {
+  this.load.image('grass', 'assets/grass.png');
+  this.load.spritesheet('soldier', 'assets/soldier.jpg', { frameWidth: 32, frameHeight:48 });
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  greetInputEl = document.querySelector("#greet-input");
-  greetMsgEl = document.querySelector("#greet-msg");
-  document.querySelector("#greet-form")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    greet();
-  });
-});
+function create(this: Phaser.Scene) {
+  this.add.image(960, 540, 'grass');
+}
+
+function update(this: Phaser.Scene) {
+
+}
