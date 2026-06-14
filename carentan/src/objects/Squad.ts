@@ -5,12 +5,14 @@ export class Squad {
     private scene: Phaser.Scene;
     private squadMembers: Soldier[] =[]
     private activeCharacterIndex: number = 0;
+
     private actionKeys: {
       W: Phaser.Input.Keyboard.Key;
       A: Phaser.Input.Keyboard.Key;
       S: Phaser.Input.Keyboard.Key;
       D: Phaser.Input.Keyboard.Key;
       CHARSWAP: Phaser.Input.Keyboard.Key;
+      R: Phaser.Input.Keyboard.Key;
     };
 
     constructor(scene: Phaser.Scene) {
@@ -21,7 +23,8 @@ export class Squad {
             A: Phaser.Input.Keyboard.KeyCodes.A,
             S: Phaser.Input.Keyboard.KeyCodes.S,
             D: Phaser.Input.Keyboard.KeyCodes.D,
-            CHARSWAP: Phaser.Input.Keyboard.KeyCodes.SPACE
+            CHARSWAP: Phaser.Input.Keyboard.KeyCodes.SPACE,
+            R: Phaser.Input.Keyboard.KeyCodes.R
           }) as any;
     }
 
@@ -64,6 +67,10 @@ export class Squad {
 
         if (this.scene.input.activePointer.isDown) {
             currentCharacter.shoot();
+        }
+
+        if (Phaser.Input.Keyboard.JustDown(this.actionKeys.R)) {
+            currentCharacter.reload();
         }
 
         let body = currentCharacter.body as Phaser.Physics.Arcade.Body;

@@ -11,7 +11,7 @@ export class Soldier extends Phaser.GameObjects.Container {
     public isHidden: boolean = false;
 
     private nextFireTime: number = 0;
-    private currentAmmo: number = 0;
+    private isReady: boolean = true;
 
     private weaponConfig: {
         main_weapon: string;
@@ -20,9 +20,10 @@ export class Soldier extends Phaser.GameObjects.Container {
         damage: number;
         ammo: number;
         weapon_sounds: {
-            shoot: string;
+            shoot: string[];
             reload: string
         };
+        current_ammo: number;
     };
 
     constructor(scene: Phaser.Scene, 
@@ -100,9 +101,15 @@ export class Soldier extends Phaser.GameObjects.Container {
     }
 
     public shoot() {
+        const shootAudio = this.weaponConfig.weapon_sounds.shoot;
+
+        if (this.isReady === false) return;
         if (this.nextFireTime > 0) return;
-        if (this.weaponConfig.ammo == 0) {
-            console.log(`[COMBAT] NO AMMO`);
+
+        if (this.weaponConfig.current_ammo <= 0) {
+            console.log(`[AMMO] NO AMMO`);
+            this.isReady = false;
+            console.log(`[AMMO] WEAPON NOT READY ${this.isReady}`);
             return;
         }
         
@@ -110,17 +117,32 @@ export class Soldier extends Phaser.GameObjects.Container {
         let bullet = (this.scene as any).bullets.create(this.x, this.y, 'bullet') as Bullet;
         bullet.fire(this.unitWeapon.rotation);
 
-        const shootAudio = this.weaponConfig.weapon_sounds.shoot;
-        this.weaponConfig.ammo = this.weaponConfig.ammo - 1;
-        console.log(`[COMBAT] Ammo: ${this.weaponConfig.ammo}`);
+        if (this.weaponConfig.current_ammo == 1) {
+            this.scene.sound.play(this.weaponConfig.weapon_sounds.shoot[1]);
+        } else {
+            this.scene.sound.play(this.weaponConfig.weapon_sounds.shoot[0]);
+        }
+
+        this.weaponConfig.current_ammo = this.weaponConfig.current_ammo - 1;
+        console.log(`[COMBAT] Ammo: ${this.weaponConfig.current_ammo}`);
 
         if (shootAudio) {
             console.log(`[AUDIO DEBUG] Shoot: ${shootAudio}`);
         }
 
-        this.scene.sound.play(this.weaponConfig.weapon_sounds.shoot);
-
         this.nextFireTime = this.weaponConfig.fireRate;
+    }
+
+    public reload() {
+        const reloadAudio = this.scene.sound.add(this.weaponConfig.weapon_sounds.reload);
+        console.log(`[COMBAT DEBUG] Pressed R`);
+        reloadAudio.play();
+        this.isReady = false;
+        reloadAudio.on('complete', () => {
+            console.log(`[RELOAD] Reload has finished`);
+            this.weaponConfig.current_ammo = this.weaponConfig.ammo;
+            this.isReady = true;
+        });
     }
 
     public setVisbibilityState(visible: boolean) {

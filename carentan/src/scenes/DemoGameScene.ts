@@ -26,9 +26,11 @@ export class DemoGameScene extends Phaser.Scene {
 
         //AUDIO
         this.load.audio('shoot_thompson', 'assets/sfx/thompson_fire.mp3');
+        this.load.audio('shoot_thompson_last', 'assets/sfx/thompson_fire.mp3');
         this.load.audio('reload_thompson', 'assets/sfx/thompson_reload.mp3');
 
         this.load.audio('shoot_garand', 'assets/sfx/garand_fire.mp3');
+        this.load.audio('shoot_garand_last', 'assets/sfx/garand_ping.mp3');
         this.load.audio('reload_garand', 'assets/sfx/garand_reload.mp3');
     }
 
