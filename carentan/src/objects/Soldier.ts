@@ -6,15 +6,40 @@ export class Soldier extends Phaser.GameObjects.Container {
     private headSprite: Phaser.GameObjects.Sprite;
     private unitWeapon: Phaser.GameObjects.Sprite;
     private nameCard: Phaser.GameObjects.Text;
+
     private currentHealth: number = 100;
     public isHidden: boolean = false;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, bodyTexture: string, headTexture: string, name: string, kit: string, health: number) {
+    private nextFireTime: number = 0;
+    private currentAmmo: number = 0;
+
+    private weaponConfig: {
+        main_weapon: string;
+        texture: string;
+        fireRate: number;
+        damage: number;
+        ammo: number;
+        weapon_sounds: {
+            shoot: string;
+            reload: string
+        };
+    };
+
+    constructor(scene: Phaser.Scene, 
+        x: number, 
+        y: number, 
+        bodyTexture: string, 
+        headTexture: string, 
+        name: string, 
+        health: number, 
+        weaponConfig: any
+    ) {
         super(scene, x, y);
 
         this.currentHealth = health;
+        this.weaponConfig = weaponConfig;
 
-        this.unitWeapon = scene.add.sprite(0, 0, kit).setOrigin(0.1, 0.2);
+        this.unitWeapon = scene.add.sprite(0, 0, this.weaponConfig.texture).setOrigin(0.1, 0.2);
         this.unitWeapon.displayHeight = 150;
         this.unitWeapon.displayWidth = 300;
 
@@ -33,6 +58,12 @@ export class Soldier extends Phaser.GameObjects.Container {
         scene.physics.add.existing(this);
 
         scene.add.existing(this)
+    }
+
+    public update(time: number, delta: number) {
+        if (this.nextFireTime > 0) {
+            this.nextFireTime -= delta;
+        }
     }
 
     public rotateTowards(targetX: number, targetY: number) {
@@ -69,9 +100,27 @@ export class Soldier extends Phaser.GameObjects.Container {
     }
 
     public shoot() {
+        if (this.nextFireTime > 0) return;
+        if (this.weaponConfig.ammo == 0) {
+            console.log(`[COMBAT] NO AMMO`);
+            return;
+        }
+        
         console.log(`[COMBAT] ${this.nameCard.text} SHOT`);
         let bullet = (this.scene as any).bullets.create(this.x, this.y, 'bullet') as Bullet;
         bullet.fire(this.unitWeapon.rotation);
+
+        const shootAudio = this.weaponConfig.weapon_sounds.shoot;
+        this.weaponConfig.ammo = this.weaponConfig.ammo - 1;
+        console.log(`[COMBAT] Ammo: ${this.weaponConfig.ammo}`);
+
+        if (shootAudio) {
+            console.log(`[AUDIO DEBUG] Shoot: ${shootAudio}`);
+        }
+
+        this.scene.sound.play(this.weaponConfig.weapon_sounds.shoot);
+
+        this.nextFireTime = this.weaponConfig.fireRate;
     }
 
     public setVisbibilityState(visible: boolean) {

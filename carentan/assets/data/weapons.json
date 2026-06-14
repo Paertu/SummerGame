@@ -2,14 +2,22 @@
     "rifler": {
         "main_weapon": "M1 Garand",
         "texture": "anim_garand",
-        "fireRate": 1,
+        "weapon_sounds": {
+            "shoot": "shoot_garand",
+            "reload": "reload_garand"
+        },
+        "fireRate": 600,
         "damage": 80,
         "ammo": 8
     },
-        "submachinegunner": {
+    "submachinegunner": {
         "main_weapon": "Thompson",
         "texture": "anim_thompson",
-        "fireRate": 5,
+        "weapon_sounds": {
+            "shoot": "shoot_thompson",
+            "reload": "reload_thompson"
+        },
+        "fireRate": 100,
         "damage": 20,
         "ammo": 31
     }

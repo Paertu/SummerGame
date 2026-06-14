@@ -25,16 +25,25 @@ export class Squad {
           }) as any;
     }
 
-    public spawn(spawnData: any[]) {
+    public spawn(spawnData: any[], kitData: any) {
         this.squadMembers = [];
 
         spawnData.forEach((data) => {
-            let soldier =  new Soldier(this.scene, data.x, data.y, data.bodyTexture, data.headTexture, data.name, data.kit, data.health);
+            const weaponStats = kitData[data.kit];
+
+            let soldier =  new Soldier(this.scene, data.x, data.y, data.bodyTexture, data.headTexture, data.name, data.health, weaponStats);
+            console.log(`[KIT DEBUG](${data.name}) | HP:${data.health} 
+                \nBody Texture:${data.bodyTexture} 
+                \nweapon Texture:${weaponStats.texture} 
+                \naudio files:${weaponStats.weapon_sounds.shoot}, ${weaponStats.weapon_sounds.reload}
+                \nfireRate(ms):${weaponStats.fireRate} 
+                `)
             this.squadMembers.push(soldier);
         });
     }
 
-    public update() {
+    update(time: number, delta: number) {
+
         if (Phaser.Input.Keyboard.JustDown(this.actionKeys.CHARSWAP)) {
             if (this.squadMembers[this.activeCharacterIndex]) {
                 (this.squadMembers[this.activeCharacterIndex].body as Phaser.Physics.Arcade.Body).setVelocity(0);
@@ -46,11 +55,12 @@ export class Squad {
         let currentCharacter = this.squadMembers[this.activeCharacterIndex];
         if (!currentCharacter) return;
     
+        this.squadMembers.forEach(soldier => soldier.update(time, delta));
+
         const pointer = this.scene.input.activePointer;
         currentCharacter.rotateTowards(pointer.worldX, pointer.worldY);
 
         currentCharacter.updateHealthVisuals();
-        console.log(currentCharacter.updateHealthVisuals);
 
         if (this.scene.input.activePointer.isDown) {
             currentCharacter.shoot();
