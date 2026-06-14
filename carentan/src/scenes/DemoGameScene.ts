@@ -1,8 +1,10 @@
 import Phaser from "phaser";
 import { Squad } from "../objects/Squad";
+import { Bullet } from "../objects/Bullet";
 
 export class DemoGameScene extends Phaser.Scene {
     private squadMembers!: Squad;
+    private bullets!: Phaser.Physics.Arcade.Group;
     
     constructor() {
         super({key: 'DemoGameScene' });
@@ -17,15 +19,22 @@ export class DemoGameScene extends Phaser.Scene {
 
         this.load.image('rifler', 'assets/sprites/weapons/m1garand.png');
         this.load.image('submachinegunner', 'assets/sprites/weapons/thompson.png');
+
+        this.load.image('bullet', 'assets/sprites/bullet.png');
     }
 
     create() {
+        this.bullets = this.physics.add.group({
+            classType: Bullet,
+            runChildUpdate: true
+        });
+        
         this.add.tileSprite(960, 540, 1920, 1080, 'grass');
 
         this.squadMembers = new Squad(this);
 
         this.squadMembers.spawn([
-            { x: 960, y: 540, bodyTexture: 'bodyTexture', headTexture: 'headTexture', name: "Foley", kit: "rifler", health: 25 },
+            { x: 960, y: 540, bodyTexture: 'bodyTexture', headTexture: 'headTexture', name: "Foley", kit: "rifler", health: 77 },
             { x: 960, y: 540, bodyTexture: 'bodyTexture', headTexture: 'headTexture', name: "Emily", kit: "submachinegunner", health: 100 },
         ]);
     }

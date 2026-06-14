@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { Bullet } from "./Bullet";
 
 export class Soldier extends Phaser.GameObjects.Container {
     private bodySprite: Phaser.GameObjects.Sprite;
@@ -69,6 +70,8 @@ export class Soldier extends Phaser.GameObjects.Container {
 
     public shoot() {
         console.log(`[COMBAT] ${this.nameCard.text} SHOT`);
+        let bullet = (this.scene as any).bullets.create(this.x, this.y, 'bullet') as Bullet;
+        bullet.fire(this.unitWeapon.rotation);
     }
 
     public setVisbibilityState(visible: boolean) {
