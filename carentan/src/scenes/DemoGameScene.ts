@@ -22,7 +22,7 @@ export class DemoGameScene extends Phaser.Scene {
         this.load.spritesheet('anim_garand', 'assets/sprites/weapons/m1garand.png', {frameWidth: 300, frameHeight: 150, startFrame: 0, endFrame: 0});
         this.load.spritesheet('anim_thompson', 'assets/sprites/weapons/anim_thompson.png', {frameWidth: 300, frameHeight: 150, startFrame: 0, endFrame: 3});
 
-        this.load.image('bullet', 'assets/sprites/bullet.png');
+        this.load.image('bullet', 'assets/sprites/weapons/gun_shell.png');
 
         //AUDIO
         this.load.audio('shoot_thompson', 'assets/sfx/thompson_fire.mp3');

@@ -10,7 +10,9 @@ var carentanConfig = {
     default: 'arcade',
     arcade: {
       gravity: { y:0, x:0 },
-      debugger: true
+      debug: true,
+      debugShowBody: true,
+      debugShowVelocity: true
     }
   },
   scene: [ MainMenuScene, DemoGameScene ]

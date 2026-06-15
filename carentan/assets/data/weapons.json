@@ -11,6 +11,10 @@
             "shoot": { "start": 1, "end": 2, "fps": 24},
             "reload": { "start": 0, "end": 0, "fps": 1}
         },
+        "barrel_offset": {
+            "x": 250,
+            "y": 45
+        },
         "fireRate": 600,
         "damage": 80,
         "ammo": 8,
@@ -27,6 +31,10 @@
             "default": { "start": 0, "end": 0, "fps": 1},
             "shoot": { "start": 1, "end": 2, "fps": 24},
             "reload": { "start": 0, "end": 0, "fps": 1}
+        },
+        "barrel_offset": {
+            "x": 200,
+            "y": 47
         },
         "fireRate": 100,
         "damage": 20,

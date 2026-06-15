@@ -20,6 +20,7 @@ export class Soldier extends Phaser.GameObjects.Container {
         fireRate: number;
         damage: number;
         ammo: number;
+        barrel_offset: { x: number, y: number };
         weapon_sounds: {
             shoot: string[];
             reload: string
@@ -58,6 +59,10 @@ export class Soldier extends Phaser.GameObjects.Container {
         this.add([ this.nameCard, this.unitWeapon, this.bodySprite, this.headSprite,]);
 
         scene.physics.add.existing(this);
+
+        const physicsBody = this.body as Phaser.Physics.Arcade.Body;
+        physicsBody.setCircle(75);
+        physicsBody.setOffset(-75);
 
         scene.add.existing(this)
     }
@@ -145,8 +150,18 @@ export class Soldier extends Phaser.GameObjects.Container {
 
     private fireWeapon() {
         console.log(`[COMBAT] ${this.nameCard.text} SHOT`);
-        let bullet = (this.scene as any).bullets.create(this.x, this.y, 'bullet') as Bullet;
-        bullet.fire(this.unitWeapon.rotation);
+        console.log(`${this.weaponConfig.barrel_offset}`);
+        const xOffset = this.weaponConfig.barrel_offset.x || 0;
+        const yOffset = this.weaponConfig.barrel_offset.y || 0;
+        console.log(`xOffset: ${xOffset}, yOffset: ${yOffset}`);
+        const angle = this.unitWeapon.rotation;
+
+        const projectileSpawnX = this.x + (Math.cos(angle) * xOffset - Math.sin(angle) * yOffset);
+        const projectileSpawnY = this.y + (Math.sin(angle) * xOffset + Math.cos(angle) * yOffset);
+
+        let bullet = (this.scene as any).bullets.create(projectileSpawnX, projectileSpawnY, angle, 'bullet') as Bullet;
+        bullet.fire(angle);
+
         console.log(`[COMBAT] Ammo: ${this.weaponConfig.current_ammo}`);
     }
 

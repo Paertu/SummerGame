@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 
 export class Bullet extends Phaser.Physics.Arcade.Sprite {
-    private bulletVelocity: number = 1500;
+    private bulletVelocity: number = 2500;
     constructor(scene: Phaser.Scene, x: number, y:  number, angle: number, texture: string, damage: number) {
         super(scene, x, y, texture);
 
