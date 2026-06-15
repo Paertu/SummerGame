@@ -8,13 +8,13 @@ export class Soldier extends Phaser.GameObjects.Container {
     private unitWeapon: Phaser.GameObjects.Sprite;
     public nameCard: Phaser.GameObjects.Text;
 
-    private currentHealth: number = 100;
+    public currentHealth: number = 100;
     public isHidden: boolean = false;
 
     private nextFireTime: number = 0;
     private isReady: boolean = true;
 
-    private weaponConfig: {
+    public weaponConfig: {
         main_weapon: string;
         texture: string;
         fireRate: number;

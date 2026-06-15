@@ -87,7 +87,9 @@ export class Squad {
         if (this.actionKeys.D.isDown) { body.setVelocityX(300); }
     }
 
-    public getMembers(): Soldier[] {
+    public getAllSprites(): Soldier[] {
         return this.squadMembers;
     }
+
+    
 }

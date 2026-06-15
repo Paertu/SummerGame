@@ -5,6 +5,7 @@ import { Soldier } from "../objects/Soldier";
 
 export class DemoGameScene extends Phaser.Scene {
     private squadMembers!: Squad;
+    private enemies!: Squad;
     public soldier!: Soldier;
     private bullets!: Phaser.Physics.Arcade.Group;
     
@@ -17,6 +18,8 @@ export class DemoGameScene extends Phaser.Scene {
 
         this.load.image('grass', 'assets/grass.png');
         this.load.image('soldier', 'assets/soldier.jpg');
+
+        //ALLIES
 
         this.load.image('bodyTexture', 'assets/sprites/units/alliedUnits/allied_soldier_torso_1.png');
         this.load.image('headTexture', 'assets/sprites/units/alliedUnits/allied_soldier_head_1.png');
@@ -34,6 +37,11 @@ export class DemoGameScene extends Phaser.Scene {
         this.load.audio('shoot_garand', 'assets/sfx/garand_fire.mp3');
         this.load.audio('shoot_garand_last', 'assets/sfx/garand_ping.mp3');
         this.load.audio('reload_garand', 'assets/sfx/garand_reload.mp3');
+
+        // AXIS
+
+        this.load.image('bodyPlaceholder', 'assets/soldier.jpg');
+        this.load.image('headPlaceholder', 'assets/soldier.jpg');
     }
 
     create() {
@@ -74,7 +82,14 @@ export class DemoGameScene extends Phaser.Scene {
             { x: 1000, y: 540, bodyTexture: 'bodyTexture', headTexture: 'headTexture', name: "Pvt. Riley", kit: "submachinegunner", health: 100}
         ], kitData);
 
-        const initialSoldier = this.squadMembers.getMembers()
+        this.enemies = new Squad(this);
+
+        this.enemies.spawn([
+            { x: 235, y: 560, bodyTexture: 'bodyPlaceholder', headTexture: 'headPlaceholder', name: "Meanie 1", kit: "rifler", health: 100},
+            { x: 300, y: 660, bodyTexture: 'bodyPlaceholder', headTexture: 'headPlaceholder', name: "Meanie 2", kit: "submachinegunner", health: 100}
+        ], kitData);
+
+        const initialSoldier = this.squadMembers.getAllSprites()
 
         this.scene.launch('SceneHud', { trackingTarget: initialSoldier});
     }
