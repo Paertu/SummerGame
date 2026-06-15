@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { MainMenuScene } from "./scenes/MainMenuScene";
 import { DemoGameScene } from "./scenes/DemoGameScene";
+import { SceneHud } from "./scenes/SceneHud";
 
 var carentanConfig = {
   type: Phaser.AUTO,
@@ -11,11 +12,9 @@ var carentanConfig = {
     arcade: {
       gravity: { y:0, x:0 },
       debug: true,
-      debugShowBody: true,
-      debugShowVelocity: true
     }
   },
-  scene: [ MainMenuScene, DemoGameScene ]
+  scene: [ MainMenuScene, DemoGameScene, SceneHud ]
 };
 
 var carentanGame = new Phaser.Game(carentanConfig);

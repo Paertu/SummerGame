@@ -6,7 +6,7 @@ export class Soldier extends Phaser.GameObjects.Container {
     private bodySprite: Phaser.GameObjects.Sprite;
     private headSprite: Phaser.GameObjects.Sprite;
     private unitWeapon: Phaser.GameObjects.Sprite;
-    private nameCard: Phaser.GameObjects.Text;
+    public nameCard: Phaser.GameObjects.Text;
 
     private currentHealth: number = 100;
     public isHidden: boolean = false;

@@ -1,9 +1,11 @@
 import Phaser from "phaser";
 import { Squad } from "../objects/Squad";
 import { Bullet } from "../objects/Bullet";
+import { Soldier } from "../objects/Soldier";
 
 export class DemoGameScene extends Phaser.Scene {
     private squadMembers!: Squad;
+    public soldier!: Soldier;
     private bullets!: Phaser.Physics.Arcade.Group;
     
     constructor() {
@@ -63,14 +65,18 @@ export class DemoGameScene extends Phaser.Scene {
             runChildUpdate: true
         });
         
-        this.add.tileSprite(960, 540, 1920, 1080, 'grass');
+        this.add.tileSprite(3000, 2000, 6000, 4000, 'grass');
 
         this.squadMembers = new Squad(this);
 
         this.squadMembers.spawn([
-            { x: 960, y: 540, bodyTexture: 'bodyTexture', headTexture: 'headTexture', name: "Sgt. Foley", kit: "rifler", health: 100},
-            { x: 960, y: 540, bodyTexture: 'bodyTexture', headTexture: 'headTexture', name: "Pvt. Riley", kit: "submachinegunner", health: 100}
+            { x: 790, y: 540, bodyTexture: 'bodyTexture', headTexture: 'headTexture', name: "Sgt. Foley", kit: "rifler", health: 100},
+            { x: 1000, y: 540, bodyTexture: 'bodyTexture', headTexture: 'headTexture', name: "Pvt. Riley", kit: "submachinegunner", health: 100}
         ], kitData);
+
+        const initialSoldier = this.squadMembers.getMembers()
+
+        this.scene.launch('SceneHud', { trackingTarget: initialSoldier});
     }
 
     update(time: number, delta: number) {

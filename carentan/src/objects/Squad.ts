@@ -53,6 +53,9 @@ export class Squad {
             }
             this.activeCharacterIndex = (this.activeCharacterIndex + 1) % this.squadMembers.length;
             console.log("[CHARACTER ACTION] Swapped to character index:", this.activeCharacterIndex);
+
+            const newTarget = this.squadMembers[this.activeCharacterIndex];
+            this.scene.events.emit('hud:swapTarget', newTarget);
         }
         
         let currentCharacter = this.squadMembers[this.activeCharacterIndex];
@@ -82,5 +85,9 @@ export class Squad {
         
         if (this.actionKeys.A.isDown) { body.setVelocityX(-300); }  
         if (this.actionKeys.D.isDown) { body.setVelocityX(300); }
+    }
+
+    public getMembers(): Soldier[] {
+        return this.squadMembers;
     }
 }
