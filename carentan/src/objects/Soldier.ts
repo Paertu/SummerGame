@@ -42,15 +42,15 @@ export class Soldier extends Phaser.GameObjects.Container {
         this.currentHealth = health;
         this.weaponConfig = weaponConfig;
 
-        this.unitWeapon = scene.add.sprite(0, 0, this.weaponConfig.texture).setOrigin(0.1, 0.2);
+        this.unitWeapon = this.scene.add.sprite(0, 0, this.weaponConfig.texture).setOrigin(0.1, 0.2);
         this.unitWeapon.displayHeight = 150;
         this.unitWeapon.displayWidth = 300;
 
-        this.bodySprite = scene.add.sprite(0, 0, bodyTexture);
+        this.bodySprite = this.scene.add.sprite(0, 0, bodyTexture);
         this.bodySprite.displayHeight = 200;
         this.bodySprite.displayWidth = 125;
 
-        this.headSprite = scene.add.sprite(0, 0, headTexture);
+        this.headSprite = this.scene.add.sprite(0, 0, headTexture);
         this.headSprite.displayHeight = 200;
         this.headSprite.displayWidth = 125;
 
@@ -61,6 +61,7 @@ export class Soldier extends Phaser.GameObjects.Container {
         scene.physics.add.existing(this);
 
         const physicsBody = this.body as Phaser.Physics.Arcade.Body;
+        
         physicsBody.setCircle(75);
         physicsBody.setOffset(-75);
 
