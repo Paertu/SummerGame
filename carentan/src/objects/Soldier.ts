@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { Bullet } from "./Bullet";
+import { } from "../helpers/combatHelpers";
 
 export class Soldier extends Phaser.GameObjects.Container {
     private bodySprite: Phaser.GameObjects.Sprite;
@@ -101,35 +102,14 @@ export class Soldier extends Phaser.GameObjects.Container {
     }
 
     public shoot() {
-        const shootAudio = this.weaponConfig.weapon_sounds.shoot;
-
-        if (this.isReady === false) return;
-        if (this.nextFireTime > 0) return;
-
-        if (this.weaponConfig.current_ammo <= 0) {
-            console.log(`[AMMO] NO AMMO`);
-            this.isReady = false;
-            console.log(`[AMMO] WEAPON NOT READY ${this.isReady}`);
-            return;
-        }
+        if (this.isReady === false || this.nextFireTime > 0) return;
+        if (this.handleOutOfAmmo()) return;
         
-        console.log(`[COMBAT] ${this.nameCard.text} SHOT`);
-        let bullet = (this.scene as any).bullets.create(this.x, this.y, 'bullet') as Bullet;
-        bullet.fire(this.unitWeapon.rotation);
+        this.fireWeapon();
 
-        if (this.weaponConfig.current_ammo == 1) {
-            this.scene.sound.play(this.weaponConfig.weapon_sounds.shoot[1]);
-        } else {
-            this.scene.sound.play(this.weaponConfig.weapon_sounds.shoot[0]);
-        }
+        this.playWeaponSounds();
 
         this.weaponConfig.current_ammo = this.weaponConfig.current_ammo - 1;
-        console.log(`[COMBAT] Ammo: ${this.weaponConfig.current_ammo}`);
-
-        if (shootAudio) {
-            console.log(`[AUDIO DEBUG] Shoot: ${shootAudio}`);
-        }
-
         this.nextFireTime = this.weaponConfig.fireRate;
     }
 
@@ -151,6 +131,35 @@ export class Soldier extends Phaser.GameObjects.Container {
             this.alpha = 1.0 
         } else {
             this.alpha = 0.3
+        }
+    }
+
+    private handleOutOfAmmo(): boolean {
+        if (this.weaponConfig.current_ammo <= 0) {
+            console.log(`[AMMO] ${this.nameCard.text} ran out of ammo`);
+            this.isReady = false;
+            return true;
+        }
+        return false;
+    }
+
+    private fireWeapon() {
+        console.log(`[COMBAT] ${this.nameCard.text} SHOT`);
+        let bullet = (this.scene as any).bullets.create(this.x, this.y, 'bullet') as Bullet;
+        bullet.fire(this.unitWeapon.rotation);
+        console.log(`[COMBAT] Ammo: ${this.weaponConfig.current_ammo}`);
+    }
+
+    private playWeaponSounds() {
+        const shootAudio = this.weaponConfig.weapon_sounds.shoot;
+        if (this.weaponConfig.current_ammo == 1) {
+            this.scene.sound.play(this.weaponConfig.weapon_sounds.shoot[1]);
+        } else {
+            this.scene.sound.play(this.weaponConfig.weapon_sounds.shoot[0]);
+        }
+
+        if (shootAudio) {
+            console.log(`[AUDIO DEBUG] Shoot: ${shootAudio}`);
         }
     }
 }

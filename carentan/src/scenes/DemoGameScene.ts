@@ -19,8 +19,8 @@ export class DemoGameScene extends Phaser.Scene {
         this.load.image('bodyTexture', 'assets/sprites/units/alliedUnits/allied_soldier_torso_1.png');
         this.load.image('headTexture', 'assets/sprites/units/alliedUnits/allied_soldier_head_1.png');
 
-        this.load.image('anim_garand', 'assets/sprites/weapons/m1garand.png');
-        this.load.image('anim_thompson', 'assets/sprites/weapons/thompson.png');
+        this.load.spritesheet('anim_garand', 'assets/sprites/weapons/m1garand.png', {frameWidth: 300, frameHeight: 150, startFrame: 0, endFrame: 0});
+        this.load.spritesheet('anim_thompson', 'assets/sprites/weapons/anim_thompson.png', {frameWidth: 300, frameHeight: 150, startFrame: 0, endFrame: 3});
 
         this.load.image('bullet', 'assets/sprites/bullet.png');
 
@@ -36,6 +36,28 @@ export class DemoGameScene extends Phaser.Scene {
 
     create() {
         const kitData = this.cache.json.get('kitData');
+
+        Object.keys(kitData).forEach(kitKey => {
+            const kit = kitData[kitKey];
+            const anims = kit.animations;
+
+            if (anims) {
+                this.anims.create({
+                    key:`${kit.texture}_shoot`,
+                    frames: this.anims.generateFrameNumbers(kit.texture, { start: anims.shoot.start, end: anims.shoot.end}),
+                    frameRate: anims.shoot.fps,
+                    repeat: -1
+                });
+
+                this.anims.create({
+                    key:`${kit.texture}_default`,
+                    frames: this.anims.generateFrameNumbers(kit.texture, { start: anims.default.start, end: anims.default.end}),
+                    frameRate: anims.shoot.fps,
+                    repeat: -1
+                });
+            }
+        });
+
         this.bullets = this.physics.add.group({
             classType: Bullet,
             runChildUpdate: true
