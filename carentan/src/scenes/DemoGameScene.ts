@@ -79,7 +79,8 @@ export class DemoGameScene extends Phaser.Scene {
 
         this.squadMembers.spawn([
             { x: 790, y: 540, bodyTexture: 'bodyTexture', headTexture: 'headTexture', name: "Sgt. Foley", kit: "rifler", health: 100},
-            { x: 1000, y: 540, bodyTexture: 'bodyTexture', headTexture: 'headTexture', name: "Pvt. Riley", kit: "submachinegunner", health: 100}
+            { x: 1000, y: 540, bodyTexture: 'bodyTexture', headTexture: 'headTexture', name: "Pvt. Riley", kit: "submachinegunner", health: 100},
+            { x: 860, y: 540, bodyTexture: 'bodyTexture', headTexture: 'headTexture', name: "Cpl. Miller", kit: "rifler", health: 100}
         ], kitData);
 
         this.enemies = new Squad(this);
@@ -93,7 +94,7 @@ export class DemoGameScene extends Phaser.Scene {
         const enemyArray = this.enemies.getAllSprites();
 
         enemyArray.forEach(singleVictim => {
-            this.physics.add.overlap(this.bullets, singleVictim, (bullet, victim) => {
+            this.physics.add.overlap(this.bullets, singleVictim, (victim, bullet) => {
                 console.log(`[DEBUG] SHOT ENEMY: ${singleVictim.nameCard.text}`);
 
                 bullet.destroy();
@@ -103,7 +104,7 @@ export class DemoGameScene extends Phaser.Scene {
         });
 
         initialSoldier.forEach(singleVictim => {
-            this.physics.add.overlap(this.bullets, singleVictim, (bullet, victim) => {
+            this.physics.add.overlap(this.bullets, singleVictim, (victim, bullet) => {
                 console.log(`[DEBUG] SHOT FRIENDLY: ${singleVictim.nameCard.text}`);
 
                 bullet.destroy();

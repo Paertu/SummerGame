@@ -30,8 +30,23 @@ export class Squad {
 
     public spawn(spawnData: any[], kitData: any) {
         this.squadMembers = [];
+
         spawnData.forEach((data) => {
-            const weaponStats = kitData[data.kit];
+            const baseWeaponStats = kitData[data.kit];
+
+            if (!baseWeaponStats) {
+                console.log("[DEBUG] no base stats found");
+                return;
+            }
+
+            const weaponStats = {
+                texture: baseWeaponStats.texture,
+                fireRate: baseWeaponStats.fireRate,
+                current_ammo: baseWeaponStats.current_ammo,
+                ammo: baseWeaponStats.ammo,
+                weapon_sounds: baseWeaponStats.weapon_sounds,
+                barrel_offset: baseWeaponStats.barrel_offset
+            };
 
             let soldier =  new Soldier(this.scene, data.x, data.y, data.bodyTexture, data.headTexture, data.name, data.health, weaponStats);
             console.log(`[KIT DEBUG](${data.name}) | HP:${data.health} 
@@ -45,7 +60,6 @@ export class Squad {
     }
 
     update(time: number, delta: number) {
-
         if (Phaser.Input.Keyboard.JustDown(this.actionKeys.CHARSWAP)) {
             if (this.squadMembers[this.activeCharacterIndex]) {
                 (this.squadMembers[this.activeCharacterIndex].body as Phaser.Physics.Arcade.Body).setVelocity(0);
@@ -93,8 +107,22 @@ export class Squad {
     public removeFromSquad(soldierToRemove: Soldier) {
         const targetName = soldierToRemove.nameCard.text;
 
-        this.squadMembers = this.squadMembers.filter(member => { return member.nameCard.text !== targetName});
-    }
+        const controlledCharacter = this.squadMembers[this.activeCharacterIndex];
 
-    
+        this.squadMembers = this.squadMembers.filter(member => { return member.nameCard.text !== targetName});
+
+        if (controlledCharacter && controlledCharacter.nameCard.text === targetName) {
+            this.activeCharacterIndex = 0;
+        }   
+        else {
+            const newIndex = this.squadMembers.findIndex(member => member.nameCard.text === controlledCharacter.nameCard.text);
+            if (newIndex !== -1) {
+                this.activeCharacterIndex = newIndex;
+            }
+
+            if (this.activeCharacterIndex >= this.squadMembers.length) {
+                this.activeCharacterIndex = 0;
+            }
+        }
+    }
 }
