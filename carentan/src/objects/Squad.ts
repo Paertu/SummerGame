@@ -3,7 +3,7 @@ import { Soldier } from "./Soldier";
 
 export class Squad {
     private scene: Phaser.Scene;
-    private squadMembers: Soldier[] =[]
+    private squadMembers: Soldier[] =[];
     private activeCharacterIndex: number = 0;
 
     private actionKeys: {
@@ -30,7 +30,6 @@ export class Squad {
 
     public spawn(spawnData: any[], kitData: any) {
         this.squadMembers = [];
-
         spawnData.forEach((data) => {
             const weaponStats = kitData[data.kit];
 
@@ -89,6 +88,12 @@ export class Squad {
 
     public getAllSprites(): Soldier[] {
         return this.squadMembers;
+    }
+
+    public removeFromSquad(soldierToRemove: Soldier) {
+        const targetName = soldierToRemove.nameCard.text;
+
+        this.squadMembers = this.squadMembers.filter(member => { return member.nameCard.text !== targetName});
     }
 
     

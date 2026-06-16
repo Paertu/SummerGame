@@ -92,8 +92,25 @@ export class DemoGameScene extends Phaser.Scene {
         const initialSoldier = this.squadMembers.getAllSprites()
         const enemyArray = this.enemies.getAllSprites();
 
-        this.physics.add.overlap(this.bullets, enemyArray, (bullet, victim) => { console.log("[COLLISION] Hit Enemy"); bullet.destroy(); victim.destroy(); }, undefined, this);
-        this.physics.add.overlap(this.bullets, initialSoldier, (bullet, victim) => { console.log("[COLLISION] Hit Enemy"); bullet.destroy(); victim.destroy(); }, undefined, this);
+        enemyArray.forEach(singleVictim => {
+            this.physics.add.overlap(this.bullets, singleVictim, (bullet, victim) => {
+                console.log(`[DEBUG] SHOT ENEMY: ${singleVictim.nameCard.text}`);
+
+                bullet.destroy();
+                this.enemies.removeFromSquad(singleVictim);
+                singleVictim.destroy();
+            })
+        });
+
+        initialSoldier.forEach(singleVictim => {
+            this.physics.add.overlap(this.bullets, singleVictim, (bullet, victim) => {
+                console.log(`[DEBUG] SHOT FRIENDLY: ${singleVictim.nameCard.text}`);
+
+                bullet.destroy();
+                this.squadMembers.removeFromSquad(singleVictim);
+                singleVictim.destroy();
+            })
+        });
 
         this.scene.launch('SceneHud', { trackingTarget: initialSoldier});
     }
