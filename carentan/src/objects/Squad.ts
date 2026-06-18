@@ -66,7 +66,8 @@ export class Squad {
                 current_ammo: baseWeaponStats.current_ammo,
                 ammo: baseWeaponStats.ammo,
                 weapon_sounds: baseWeaponStats.weapon_sounds,
-                barrel_offset: baseWeaponStats.barrel_offset
+                barrel_offset: baseWeaponStats.barrel_offset,
+                damage: baseWeaponStats.damage
             };
 
             let soldier =  new Soldier(this.scene, data.x, data.y, data.bodyTexture, data.headTexture, data.name, data.health, weaponStats);

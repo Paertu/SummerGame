@@ -1,4 +1,4 @@
-import Phaser from "phaser";
+import Phaser, { GameObjects } from "phaser";
 import { Squad } from "../objects/Squad";
 import { Bullet } from "../objects/Bullet";
 import { Soldier } from "../objects/Soldier";
@@ -97,19 +97,14 @@ export class DemoGameScene extends Phaser.Scene {
             this.physics.add.overlap(this.bullets, singleVictim, (victim, bullet) => {
                 console.log(`[DEBUG] SHOT ENEMY: ${singleVictim.nameCard.text}`);
 
-                bullet.destroy();
-                this.enemies.removeFromSquad(singleVictim);
-                singleVictim.destroy();
+                this.handleBulletHit(victim as any, bullet as any);
             })
         });
 
         initialSoldier.forEach(singleVictim => {
             this.physics.add.overlap(this.bullets, singleVictim, (victim, bullet) => {
                 console.log(`[DEBUG] SHOT FRIENDLY: ${singleVictim.nameCard.text}`);
-
-                bullet.destroy();
-                this.squadMembers.removeFromSquad(singleVictim);
-                singleVictim.destroy();
+                this.handleBulletHit(victim  as any, bullet  as any);
             })
         });
 
@@ -118,5 +113,23 @@ export class DemoGameScene extends Phaser.Scene {
 
     update(time: number, delta: number) {
         this.squadMembers.update(time, delta);
+    }
+
+    private handleBulletHit(victimObject: Phaser.GameObjects.GameObject, bulletObject: Phaser.GameObjects.GameObject) {
+        const victim = victimObject as Soldier;
+        const bullet = bulletObject as Bullet;
+
+    console.log("Victim Health:", victim.currentHealth);
+    console.log("Bullet Damage:", bullet.getCurrentBulletDamage());
+
+        const bulletDamage = bullet.getCurrentBulletDamage();
+
+        victim.takeDamage(bulletDamage);
+        bullet.destroy();
+        
+        if (victim.currentHealth <= 0) {
+            this.squadMembers.removeFromSquad(victim);
+            victim.destroy();
+        }
     }
 }

@@ -75,4 +75,8 @@ export class CombatComponent {
     public getMaxAmmo(): number {
         return this.weaponConfig.ammo;
     }
+
+    public getCurrentWeaponDamage(): number {
+        return this.weaponConfig.damage;
+    }
 }

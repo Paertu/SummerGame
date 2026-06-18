@@ -1,8 +1,10 @@
 import Phaser from "phaser";
+import { Soldier } from "./Soldier";
 
 export class Bullet extends Phaser.Physics.Arcade.Sprite {
     private bulletVelocity: number = 2500;
-    constructor(scene: Phaser.Scene, x: number, y:  number, angle: number, texture: string, damage: number) {
+    private bulletDamage: number = 0;
+    constructor(scene: Phaser.Scene, x: number, y:  number, angle: number, texture: string) {
         super(scene, x, y, texture);
 
         scene.add.existing(this);
@@ -19,9 +21,14 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    public fire(angle: number) {
+    public fire(angle: number, damage: number) {
         this.rotation = angle;
+        this.bulletDamage = damage;
         const angleInDegrees = Phaser.Math.RadToDeg(angle);
         (this.scene.physics as any).velocityFromAngle(angleInDegrees, this.bulletVelocity, (this.body as Phaser.Physics.Arcade.Body).velocity);
+    }
+
+    public getCurrentBulletDamage() {
+        return this.bulletDamage;
     }
 }

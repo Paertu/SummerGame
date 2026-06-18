@@ -137,12 +137,14 @@ export class Soldier extends Phaser.GameObjects.Container {
         const xOffset = this.weaponConfig.barrel_offset.x || 0;
         const yOffset = this.weaponConfig.barrel_offset.y || 0;
         const angle = this.unitWeapon.rotation;
+        const damage = this.getCurrentWeaponDamage();
 
         const projectileSpawnX = this.x + (Math.cos(angle) * xOffset - Math.sin(angle) * yOffset);
         const projectileSpawnY = this.y + (Math.sin(angle) * xOffset + Math.cos(angle) * yOffset);
 
+        console.log("[SHOOT DEBUG] Weapon damage:", damage);
         let bullet = (this.scene as any).bullets.create(projectileSpawnX, projectileSpawnY, angle, 'bullet') as Bullet;
-        bullet.fire(angle);
+        bullet.fire(angle, damage);
 
         console.log(`[DEBUG] ${this.nameCard.text} shot`);
     }
@@ -157,5 +159,14 @@ export class Soldier extends Phaser.GameObjects.Container {
 
     public getMaxAmmoCount(): number {
         return this.combat.getMaxAmmo();
+    }
+
+    public getCurrentWeaponDamage(): number {
+        return this.combat.getCurrentWeaponDamage();
+    }
+
+    public takeDamage(amount: number) {
+        this.currentHealth -= amount;
+        console.log(`[COMBAT] Victim took damage! Remaining health: ${this.currentHealth}`);
     }
 }
