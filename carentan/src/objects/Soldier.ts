@@ -8,6 +8,7 @@ export class Soldier extends Phaser.GameObjects.Container {
     private headSprite: Phaser.GameObjects.Sprite;
     private unitWeapon: Phaser.GameObjects.Sprite;
     public nameCard: Phaser.GameObjects.Text;
+    public healthText: Phaser.GameObjects.Text;
 
     public currentHealth: number = 100;
     public isHidden: boolean = false;
@@ -59,8 +60,9 @@ export class Soldier extends Phaser.GameObjects.Container {
         this.headSprite.displayWidth = 125;
 
         this.nameCard = scene.add.text(0, this.bodySprite.displayHeight / 2 + 20, name, {fontSize: '26px', color: 'white' }).setOrigin(0.5);
+        this.healthText = scene.add.text(0, this.bodySprite.displayHeight / 2 + 50, health.toString(), {fontSize: '26px', color: 'white' }).setOrigin(0.5);
 
-        this.add([ this.nameCard, this.unitWeapon, this.bodySprite, this.headSprite,]);
+        this.add([ this.unitWeapon, this.bodySprite, this.headSprite, this.healthText, this.nameCard, ]);
 
         scene.physics.add.existing(this);
 
@@ -167,6 +169,7 @@ export class Soldier extends Phaser.GameObjects.Container {
 
     public takeDamage(amount: number) {
         this.currentHealth -= amount;
+        this.healthText.setText(this.currentHealth.toString());
         console.log(`[COMBAT] Victim took damage! Remaining health: ${this.currentHealth}`);
     }
 }
