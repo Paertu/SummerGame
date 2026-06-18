@@ -1,31 +1,52 @@
 import Phaser from "phaser";
 import { Soldier } from "./Soldier";
+import { inputHelper } from "../helpers/inputHelper";
 
 export class Squad {
     private scene: Phaser.Scene;
+    private inputHelper: inputHelper;
     private squadMembers: Soldier[] =[];
     private activeCharacterIndex: number = 0;
-
-    private actionKeys: {
-      W: Phaser.Input.Keyboard.Key;
-      A: Phaser.Input.Keyboard.Key;
-      S: Phaser.Input.Keyboard.Key;
-      D: Phaser.Input.Keyboard.Key;
-      CHARSWAP: Phaser.Input.Keyboard.Key;
-      R: Phaser.Input.Keyboard.Key;
-    };
 
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
 
-        this.actionKeys = this.scene.input.keyboard!.addKeys({
-            W: Phaser.Input.Keyboard.KeyCodes.W,
-            A: Phaser.Input.Keyboard.KeyCodes.A,
-            S: Phaser.Input.Keyboard.KeyCodes.S,
-            D: Phaser.Input.Keyboard.KeyCodes.D,
-            CHARSWAP: Phaser.Input.Keyboard.KeyCodes.SPACE,
-            R: Phaser.Input.Keyboard.KeyCodes.R
-          }) as any;
+        this.inputHelper = new inputHelper(this.scene);
+    }
+
+    update(time: number, delta: number) {
+        const inputs = this.inputHelper.getSquadInputs();
+
+        if (inputs.isPressSwapped) {
+            if (this.squadMembers[this.activeCharacterIndex]) {
+                (this.squadMembers[this.activeCharacterIndex].body as Phaser.Physics.Arcade.Body).setVelocity(0);
+            }
+            this.activeCharacterIndex = (this.activeCharacterIndex + 1) % this.squadMembers.length;
+            console.log("[CHARACTER ACTION] Swapped to character index:", this.activeCharacterIndex);
+
+            const newTarget = this.squadMembers[this.activeCharacterIndex];
+            this.scene.events.emit('hud:swapTarget', newTarget);
+        }
+        
+        let currentCharacter = this.squadMembers[this.activeCharacterIndex];
+        if (!currentCharacter) return;
+    
+        this.squadMembers.forEach((soldier, index) => {
+            if (index === this.activeCharacterIndex) {
+                soldier.update(time, delta, inputs.isPressMoveUp, inputs.isPressMoveDown, inputs.isPressMoveLeft, inputs.isPressMoveRight, inputs.mouseX, inputs.mouseY);
+
+                if (inputs.isShooting) {
+                    soldier.shoot();
+                }
+
+                if (inputs.isPressReload) {
+                    soldier.reload();
+                }
+            }
+            else {
+                soldier.update(time, delta, false, false, false, false);   
+            }
+        });
     }
 
     public spawn(spawnData: any[], kitData: any) {
@@ -57,47 +78,6 @@ export class Squad {
                 `)
             this.squadMembers.push(soldier);
         });
-    }
-
-    update(time: number, delta: number) {
-        if (Phaser.Input.Keyboard.JustDown(this.actionKeys.CHARSWAP)) {
-            if (this.squadMembers[this.activeCharacterIndex]) {
-                (this.squadMembers[this.activeCharacterIndex].body as Phaser.Physics.Arcade.Body).setVelocity(0);
-            }
-            this.activeCharacterIndex = (this.activeCharacterIndex + 1) % this.squadMembers.length;
-            console.log("[CHARACTER ACTION] Swapped to character index:", this.activeCharacterIndex);
-
-            const newTarget = this.squadMembers[this.activeCharacterIndex];
-            this.scene.events.emit('hud:swapTarget', newTarget);
-        }
-        
-        let currentCharacter = this.squadMembers[this.activeCharacterIndex];
-        if (!currentCharacter) return;
-    
-        this.squadMembers.forEach(soldier => soldier.update(time, delta));
-
-        const pointer = this.scene.input.activePointer;
-        currentCharacter.rotateTowards(pointer.worldX, pointer.worldY);
-
-        currentCharacter.updateHealthVisuals();
-
-        if (this.scene.input.activePointer.isDown) {
-            currentCharacter.shoot();
-        }
-
-        if (Phaser.Input.Keyboard.JustDown(this.actionKeys.R)) {
-            currentCharacter.reload();
-        }
-
-        let body = currentCharacter.body as Phaser.Physics.Arcade.Body;
-    
-        body.setVelocity(0);
-    
-        if (this.actionKeys.W.isDown) { body.setVelocityY(-300); }
-        if (this.actionKeys.S.isDown) { body.setVelocityY(300); }
-        
-        if (this.actionKeys.A.isDown) { body.setVelocityX(-300); }  
-        if (this.actionKeys.D.isDown) { body.setVelocityX(300); }
     }
 
     public getAllSprites(): Soldier[] {

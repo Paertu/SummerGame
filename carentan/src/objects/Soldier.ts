@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { Bullet } from "./Bullet";
-import { } from "../helpers/combatHelpers";
+import { MovementComponent } from "../components/MovementComponent";
+import { CombatComponent } from "../components/CombatComponent";
 
 export class Soldier extends Phaser.GameObjects.Container {
     private bodySprite: Phaser.GameObjects.Sprite;
@@ -27,6 +28,9 @@ export class Soldier extends Phaser.GameObjects.Container {
         };
         current_ammo: number;
     };
+
+    private movement: MovementComponent;
+    private combat: CombatComponent;
 
     constructor(scene: Phaser.Scene, 
         x: number, 
@@ -65,13 +69,20 @@ export class Soldier extends Phaser.GameObjects.Container {
         physicsBody.setCircle(75);
         physicsBody.setOffset(-75);
 
+        this.movement = new MovementComponent(this, 300);
+        this.combat = new CombatComponent(this.scene, this.weaponConfig);
+
         scene.add.existing(this)
     }
 
-    public update(time: number, delta: number) {
-        if (this.nextFireTime > 0) {
-            this.nextFireTime -= delta;
+    public update(time: number, delta: number, moveUp: boolean, moveDown: boolean, moveLeft: boolean, moveRight: boolean, mouseX?: number, mouseY?: number) {
+        this.movement.update(moveUp, moveDown, moveLeft, moveRight);
+        this.combat.update(delta);
+
+        if (mouseX !== undefined && mouseY !== undefined) {
+            this.rotateTowards(mouseX, mouseY);
         }
+        this.updateHealthVisuals();
     }
 
     public rotateTowards(targetX: number, targetY: number) {
@@ -107,30 +118,6 @@ export class Soldier extends Phaser.GameObjects.Container {
         }
     }
 
-    public shoot() {
-        if (this.isReady === false || this.nextFireTime > 0) return;
-        if (this.handleOutOfAmmo()) return;
-        
-        this.fireWeapon();
-
-        this.playWeaponSounds();
-
-        this.weaponConfig.current_ammo = this.weaponConfig.current_ammo - 1;
-        this.nextFireTime = this.weaponConfig.fireRate;
-    }
-
-    public reload() {
-        const reloadAudio = this.scene.sound.add(this.weaponConfig.weapon_sounds.reload);
-        console.log(`[COMBAT DEBUG] Pressed R`);
-        reloadAudio.play();
-        this.isReady = false;
-        reloadAudio.on('complete', () => {
-            console.log(`[RELOAD] Reload has finished`);
-            this.weaponConfig.current_ammo = this.weaponConfig.ammo;
-            this.isReady = true;
-        });
-    }
-
     public setVisbibilityState(visible: boolean) {
         this.isHidden = !visible;
         if (visible) { 
@@ -140,21 +127,15 @@ export class Soldier extends Phaser.GameObjects.Container {
         }
     }
 
-    private handleOutOfAmmo(): boolean {
-        if (this.weaponConfig.current_ammo <= 0) {
-            console.log(`[AMMO] ${this.nameCard.text} ran out of ammo`);
-            this.isReady = false;
-            return true;
-        }
-        return false;
-    }
+    public shoot() {
+        const didFire = this.combat.shoot();
 
-    private fireWeapon() {
-        console.log(`[COMBAT] ${this.nameCard.text} SHOT`);
-        console.log(`${this.weaponConfig.barrel_offset}`);
+        if (!didFire) {
+            return;
+        }
+
         const xOffset = this.weaponConfig.barrel_offset.x || 0;
         const yOffset = this.weaponConfig.barrel_offset.y || 0;
-        console.log(`xOffset: ${xOffset}, yOffset: ${yOffset}`);
         const angle = this.unitWeapon.rotation;
 
         const projectileSpawnX = this.x + (Math.cos(angle) * xOffset - Math.sin(angle) * yOffset);
@@ -163,19 +144,18 @@ export class Soldier extends Phaser.GameObjects.Container {
         let bullet = (this.scene as any).bullets.create(projectileSpawnX, projectileSpawnY, angle, 'bullet') as Bullet;
         bullet.fire(angle);
 
-        console.log(`[COMBAT] Ammo: ${this.weaponConfig.current_ammo}`);
+        console.log(`[DEBUG] ${this.nameCard.text} shot`);
     }
 
-    private playWeaponSounds() {
-        const shootAudio = this.weaponConfig.weapon_sounds.shoot;
-        if (this.weaponConfig.current_ammo == 1) {
-            this.scene.sound.play(this.weaponConfig.weapon_sounds.shoot[1]);
-        } else {
-            this.scene.sound.play(this.weaponConfig.weapon_sounds.shoot[0]);
-        }
+    public reload() {
+        this.combat.reload();
+    }
 
-        if (shootAudio) {
-            console.log(`[AUDIO DEBUG] Shoot: ${shootAudio}`);
-        }
+    public getAmmoCount(): number {
+        return this.combat.getCurrentAmmo();
+    }
+
+    public getMaxAmmoCount(): number {
+        return this.combat.getMaxAmmo();
     }
 }

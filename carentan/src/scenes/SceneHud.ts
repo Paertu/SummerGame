@@ -34,8 +34,8 @@ export class SceneHud extends Phaser.Scene {
             const X = Math.round(this.targetSoldier.x);
             const Y = Math.round(this.targetSoldier.y);
             const hp = this.targetSoldier.currentHealth;
-            const ammo = this.targetSoldier.weaponConfig.current_ammo;
-            const maxAmmo = this.targetSoldier.weaponConfig.ammo;
+            const ammo = this.targetSoldier.getAmmoCount();
+            const maxAmmo = this.targetSoldier.getMaxAmmoCount();
 
             this.locationText.setText(`${this.targetSoldier.nameCard.text} - X: ${X}, Y: ${Y}`);
             this.healthText.setText(`HP: ${hp}`);

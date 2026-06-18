@@ -17,8 +17,7 @@
         },
         "fireRate": 600,
         "damage": 80,
-        "ammo": 8,
-        "current_ammo": 8
+        "ammo": 8
     },
     "submachinegunner": {
         "main_weapon": "Thompson",
@@ -38,7 +37,6 @@
         },
         "fireRate": 100,
         "damage": 20,
-        "ammo": 31,
-        "current_ammo": 31
+        "ammo": 31
     }
 }
