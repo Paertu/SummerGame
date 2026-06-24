@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { Bullet } from "./Bullet";
 import { MovementComponent } from "../components/MovementComponent";
 import { CombatComponent } from "../components/CombatComponent";
+import { HealthComponent } from "../components/HealthComponent";
 
 export class Soldier extends Phaser.GameObjects.Container {
     private bodySprite: Phaser.GameObjects.Sprite;
@@ -10,7 +11,6 @@ export class Soldier extends Phaser.GameObjects.Container {
     public nameCard: Phaser.GameObjects.Text;
     public healthText: Phaser.GameObjects.Text;
 
-    public currentHealth: number = 100;
     public isHidden: boolean = false;
 
     private nextFireTime: number = 0;
@@ -30,6 +30,7 @@ export class Soldier extends Phaser.GameObjects.Container {
         current_ammo: number;
     };
 
+    private health: HealthComponent;
     private movement: MovementComponent;
     private combat: CombatComponent;
 
@@ -44,7 +45,6 @@ export class Soldier extends Phaser.GameObjects.Container {
     ) {
         super(scene, x, y);
 
-        this.currentHealth = health;
         this.weaponConfig = weaponConfig;
 
         this.unitWeapon = this.scene.add.sprite(0, 0, this.weaponConfig.texture).setOrigin(0.1, 0.2);
@@ -73,11 +73,12 @@ export class Soldier extends Phaser.GameObjects.Container {
 
         this.movement = new MovementComponent(this, 300);
         this.combat = new CombatComponent(this.scene, this.weaponConfig);
+        this.health = new HealthComponent(100);
 
         scene.add.existing(this)
     }
 
-    public update(time: number, delta: number, moveUp: boolean, moveDown: boolean, moveLeft: boolean, moveRight: boolean, mouseX?: number, mouseY?: number) {
+    public update(time: number, delta: number, moveUp: boolean, moveDown: boolean, moveLeft: boolean, moveRight: boolean, mouseX?: number, mouseY?: number): void {
         this.movement.update(moveUp, moveDown, moveLeft, moveRight);
         this.combat.update(delta);
 
@@ -87,7 +88,7 @@ export class Soldier extends Phaser.GameObjects.Container {
         this.updateHealthVisuals();
     }
 
-    public rotateTowards(targetX: number, targetY: number) {
+    public rotateTowards(targetX: number, targetY: number): void {
         const targetAngle = Phaser.Math.Angle.Between(this.x, this.y, targetX, targetY);
 
         const rotationSpeed = 0.04;
@@ -112,15 +113,15 @@ export class Soldier extends Phaser.GameObjects.Container {
     }
 
     public updateHealthVisuals() {
-        if (this.currentHealth > 75 && this.currentHealth < 100) {
+        if (this.health.getCurrentHealth() > 75 && this.health.getCurrentHealth() < 100) {
             this.nameCard.setColor('#ffc400');
         }
-        if (this.currentHealth > 1 && this.currentHealth < 30) {
+        if (this.health.getCurrentHealth() > 1 && this.health.getCurrentHealth() < 30) {
             this.nameCard.setColor('#ff0000');
         }
     }
 
-    public setVisbibilityState(visible: boolean) {
+    public setVisbibilityState(visible: boolean): void {
         this.isHidden = !visible;
         if (visible) { 
             this.alpha = 1.0 
@@ -129,7 +130,7 @@ export class Soldier extends Phaser.GameObjects.Container {
         }
     }
 
-    public shoot() {
+    public shoot(): void {
         const didFire = this.combat.shoot();
 
         if (!didFire) {
@@ -151,7 +152,7 @@ export class Soldier extends Phaser.GameObjects.Container {
         console.log(`[DEBUG] ${this.nameCard.text} shot`);
     }
 
-    public reload() {
+    public reload(): void {
         this.combat.reload();
     }
 
@@ -167,9 +168,12 @@ export class Soldier extends Phaser.GameObjects.Container {
         return this.combat.getCurrentWeaponDamage();
     }
 
-    public takeDamage(amount: number) {
-        this.currentHealth -= amount;
-        this.healthText.setText(this.currentHealth.toString());
-        console.log(`[COMBAT] Victim took damage! Remaining health: ${this.currentHealth}`);
+    public getCurrentHealth(): number {
+        return this.health.getCurrentHealth();
+    }
+
+    public takeDamage(amount: number): void{
+        const isDead = this.health.reduceHealth(amount);
+        this.healthText.setText(this.health.getCurrentHealth().toString());
     }
 }

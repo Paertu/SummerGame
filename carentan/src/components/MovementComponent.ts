@@ -1,5 +1,3 @@
-import { Physics } from "phaser"
-
 export class MovementComponent {
     private target: Phaser.GameObjects.Container;
     private body: Phaser.Physics.Arcade.Body;

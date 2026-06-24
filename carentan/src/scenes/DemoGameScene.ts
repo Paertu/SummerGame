@@ -119,15 +119,15 @@ export class DemoGameScene extends Phaser.Scene {
         const victim = victimObject as Soldier;
         const bullet = bulletObject as Bullet;
 
-    console.log("Victim Health:", victim.currentHealth);
-    console.log("Bullet Damage:", bullet.getCurrentBulletDamage());
+        console.log("Victim Health:", victim.getCurrentHealth);
+        console.log("Bullet Damage:", bullet.getCurrentBulletDamage());
 
         const bulletDamage = bullet.getCurrentBulletDamage();
 
         victim.takeDamage(bulletDamage);
         bullet.destroy();
         
-        if (victim.currentHealth <= 0) {
+        if (victim.getCurrentHealth() <= 0) {
             this.squadMembers.removeFromSquad(victim);
             victim.destroy();
         }

@@ -1,5 +1,3 @@
-import Phaser from "phaser";
-
 export interface weaponConfig {
     main_weapon: string;
     texture: string;
