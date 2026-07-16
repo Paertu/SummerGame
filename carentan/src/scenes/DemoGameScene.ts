@@ -10,6 +10,7 @@ export class DemoGameScene extends Phaser.Scene {
     private bullets!: Phaser.Physics.Arcade.Group;
     private obstacles!: Phaser.Physics.Arcade.StaticGroup;
     private enemyBullets!: Phaser.Physics.Arcade.Group;
+    private debugGraphics!: Phaser.GameObjects.Graphics;
     
     constructor() {
         super({key: 'DemoGameScene' });
@@ -47,6 +48,9 @@ export class DemoGameScene extends Phaser.Scene {
     }
 
     create() {
+        this.debugGraphics = this.add.graphics();
+        this.debugGraphics.setDepth(1000);
+
         const kitData = this.cache.json.get('kitData');
 
         Object.keys(kitData).forEach(kitKey => {
@@ -124,12 +128,16 @@ export class DemoGameScene extends Phaser.Scene {
 
         this.physics.add.collider(this.squadMembers.getAllSprites(), this.obstacles);
         this.physics.add.collider(this.enemies.getAllSprites(), this.obstacles);
+        this.physics.add.collider(this.bullets, this.obstacles);
 
         this.scene.launch('SceneHud', { trackingTarget: initialSoldier});
     }
 
     update(time: number, delta: number) {
         this.squadMembers.update(time, delta);
+        
+        const soldier = this.squadMembers.getAllSprites()[0];
+        this.debugLineOfSight(soldier);
     }
 
     private handleBulletHit(victimObject: Phaser.GameObjects.GameObject, bulletObject: Phaser.GameObjects.GameObject) {
@@ -148,5 +156,35 @@ export class DemoGameScene extends Phaser.Scene {
             this.squadMembers.removeFromSquad(victim);
             victim.destroy();
         }
+    }
+
+    private hasLineOfSight(enemy: Soldier, player: Soldier) {
+        const sightLine = new Phaser.Geom.Line(enemy.x, enemy.y, player.x, player.y);
+        const walls = this.obstacles.getChildren() as Phaser.GameObjects.Rectangle[];
+
+        for (const wall of walls) {
+            const wallBounds = wall.getBounds();
+
+            if (Phaser.Geom.Intersects.LineToRectangle(sightLine,wallBounds)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private debugLineOfSight(soldier: Soldier): void {
+        this.debugGraphics.clear();
+
+        this.enemies.getAllSprites().forEach((enemy) => {
+            const hasLOS = this.hasLineOfSight(enemy, soldier);
+
+            if (hasLOS) {
+                this.debugGraphics.lineStyle(2, 0x00ff00, 1)
+            } else {
+                this.debugGraphics.lineStyle(2, 0x00ff00, 0.2)
+            }
+
+            this.debugGraphics.lineBetween(enemy.x, enemy.y, soldier.x, soldier.y);
+        })
     }
 }
