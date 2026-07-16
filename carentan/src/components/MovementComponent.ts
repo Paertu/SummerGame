@@ -11,6 +11,10 @@ export class MovementComponent {
             target.scene.physics.world.enable(target);
         }
         this.body = target.body as Phaser.Physics.Arcade.Body
+
+        this.target.on('move', (up: boolean, down: boolean, left:boolean, right:boolean) => {
+            this.update(up, down, left, right);
+        });
     }
     
     public update(up: boolean, down: boolean, left: boolean, right: boolean) {

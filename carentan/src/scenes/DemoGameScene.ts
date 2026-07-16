@@ -107,6 +107,10 @@ export class DemoGameScene extends Phaser.Scene {
             { x: 300, y: 660, bodyTexture: 'bodyPlaceholder', headTexture: 'headPlaceholder', name: "Meanie 2", kit: "submachinegunner", health: 100}
         ], kitData);
 
+        this.enemies.getAllSprites().forEach(enemy => {
+            enemy.enableAI(this);
+        });
+
         const initialSoldier = this.squadMembers.getAllSprites()
         const enemyArray = this.enemies.getAllSprites();
 
@@ -136,15 +140,25 @@ export class DemoGameScene extends Phaser.Scene {
     update(time: number, delta: number) {
         this.squadMembers.update(time, delta);
         
+        this.enemies.getAllSprites().forEach((enemy) => {
+            enemy.update(time, delta, false, false, false, false);
+        })
+
         const soldier = this.squadMembers.getAllSprites()[0];
-        this.debugLineOfSight(soldier);
+        if (soldier) {
+            this.debugLineOfSight(soldier);
+        }
+
+        const squad = this.squadMembers.getAllSprites();
+        const enemySquad = this.enemies.getAllSprites();
+
     }
 
     private handleBulletHit(victimObject: Phaser.GameObjects.GameObject, bulletObject: Phaser.GameObjects.GameObject) {
         const victim = victimObject as Soldier;
         const bullet = bulletObject as Bullet;
 
-        console.log("Victim Health:", victim.getCurrentHealth);
+        console.log("Victim Health:", victim.getCurrentHealth());
         console.log("Bullet Damage:", bullet.getCurrentBulletDamage());
 
         const bulletDamage = bullet.getCurrentBulletDamage();

@@ -3,6 +3,7 @@ import { Bullet } from "./Bullet";
 import { MovementComponent } from "../components/MovementComponent";
 import { CombatComponent } from "../components/CombatComponent";
 import { HealthComponent } from "../components/HealthComponent";
+import { AIComponent } from "../components/AIComponent";
 
 export class Soldier extends Phaser.GameObjects.Container {
     private bodySprite: Phaser.GameObjects.Sprite;
@@ -10,6 +11,16 @@ export class Soldier extends Phaser.GameObjects.Container {
     private unitWeapon: Phaser.GameObjects.Sprite;
     public nameCard: Phaser.GameObjects.Text;
     public healthText: Phaser.GameObjects.Text;
+    private AIComponent?: AIComponent;
+
+    public enableAI(scene: any): void {
+        this.AIComponent = new AIComponent(this, scene, 400);
+    }
+
+    public moveUpState: boolean = false;
+    public moveDownState: boolean = false;
+    public moveLeftState: boolean = false;
+    public moveRightState: boolean = false;
 
     public isHidden: boolean = false;
 
@@ -74,6 +85,14 @@ export class Soldier extends Phaser.GameObjects.Container {
         physicsBody.setOffset(-75);
 
         this.movement = new MovementComponent(this, 300);
+
+        this.on('move', (up: boolean, down: boolean, left: boolean, right: boolean) => {
+            this.moveUpState = up;
+            this.moveDownState = down;
+            this.moveLeftState = left;
+            this.moveRightState = right;
+        });
+
         this.combat = new CombatComponent(this.scene, this.weaponConfig);
         this.health = new HealthComponent(100);
 
@@ -81,13 +100,21 @@ export class Soldier extends Phaser.GameObjects.Container {
     }
 
     public update(time: number, delta: number, moveUp: boolean, moveDown: boolean, moveLeft: boolean, moveRight: boolean, mouseX?: number, mouseY?: number): void {
-        this.movement.update(moveUp, moveDown, moveLeft, moveRight);
+        if (this.AIComponent) {
+            this.AIComponent.update();
+
+            this.movement.update(this.moveUpState, this.moveDownState, this.moveLeftState, this.moveRightState);
+        } else {
+            this.movement.update(moveUp, moveDown, moveLeft, moveRight);
+        }
         this.combat.update(delta);
 
         if (mouseX !== undefined && mouseY !== undefined) {
             this.rotateTowards(mouseX, mouseY);
         }
         this.updateHealthVisuals();
+
+        
     }
 
     public rotateTowards(targetX: number, targetY: number): void {
