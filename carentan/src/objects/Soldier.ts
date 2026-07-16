@@ -34,14 +34,16 @@ export class Soldier extends Phaser.GameObjects.Container {
     private movement: MovementComponent;
     private combat: CombatComponent;
 
-    constructor(scene: Phaser.Scene, 
+    constructor(
+        scene: Phaser.Scene, 
         x: number, 
         y: number, 
         bodyTexture: string, 
         headTexture: string, 
         name: string, 
         health: number, 
-        weaponConfig: any
+        weaponConfig: any,
+        private bulletGroup: Phaser.GameObjects.Group
     ) {
         super(scene, x, y);
 
@@ -146,7 +148,7 @@ export class Soldier extends Phaser.GameObjects.Container {
         const projectileSpawnY = this.y + (Math.sin(angle) * xOffset + Math.cos(angle) * yOffset);
 
         console.log("[SHOOT DEBUG] Weapon damage:", damage);
-        let bullet = (this.scene as any).bullets.create(projectileSpawnX, projectileSpawnY, angle, 'bullet') as Bullet;
+        let bullet = this.bulletGroup.create(projectileSpawnX, projectileSpawnY, undefined,'bullet') as Bullet;
         bullet.fire(angle, damage);
 
         console.log(`[DEBUG] ${this.nameCard.text} shot`);

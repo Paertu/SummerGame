@@ -7,11 +7,12 @@ export class Squad {
     private inputHelper: inputHelper;
     private squadMembers: Soldier[] =[];
     private activeCharacterIndex: number = 0;
+    private bulletGroup: Phaser.GameObjects.Group
 
-    constructor(scene: Phaser.Scene) {
+    constructor(scene: Phaser.Scene, bulletGroup: Phaser.GameObjects.Group) {
         this.scene = scene;
-
         this.inputHelper = new inputHelper(this.scene);
+        this.bulletGroup = bulletGroup;
     }
 
     update(time: number, delta: number) {
@@ -70,7 +71,7 @@ export class Squad {
                 damage: baseWeaponStats.damage
             };
 
-            let soldier =  new Soldier(this.scene, data.x, data.y, data.bodyTexture, data.headTexture, data.name, data.health, weaponStats);
+            let soldier =  new Soldier(this.scene, data.x, data.y, data.bodyTexture, data.headTexture, data.name, data.health, weaponStats, this.bulletGroup);
             console.log(`[KIT DEBUG](${data.name}) | HP:${data.health} 
                 \nBody Texture:${data.bodyTexture} 
                 \nweapon Texture:${weaponStats.texture} 

@@ -8,6 +8,8 @@ export class DemoGameScene extends Phaser.Scene {
     private enemies!: Squad;
     public soldier!: Soldier;
     private bullets!: Phaser.Physics.Arcade.Group;
+    private obstacles!: Phaser.Physics.Arcade.StaticGroup;
+    private enemyBullets!: Phaser.Physics.Arcade.Group;
     
     constructor() {
         super({key: 'DemoGameScene' });
@@ -72,19 +74,30 @@ export class DemoGameScene extends Phaser.Scene {
             classType: Bullet,
             runChildUpdate: true
         });
+
+        this.enemyBullets = this.physics.add.group({
+            classType: Bullet,
+            runChildUpdate: true
+        });
         
         this.add.tileSprite(3000, 2000, 6000, 4000, 'grass');
 
-        this.squadMembers = new Squad(this);
+        this.obstacles = this.physics.add.staticGroup();
 
+        const wall1 = this.add.rectangle(600, 500, 50, 400, 0x555555);
+        const wall2 = this.add.rectangle(800, 700, 400, 50, 0x555555);
+
+        this.obstacles.add(wall1);
+        this.obstacles.add(wall2);
+
+        this.squadMembers = new Squad(this, this.bullets);
         this.squadMembers.spawn([
             { x: 790, y: 540, bodyTexture: 'bodyTexture', headTexture: 'headTexture', name: "Sgt. Foley", kit: "rifler", health: 100},
             { x: 1000, y: 540, bodyTexture: 'bodyTexture', headTexture: 'headTexture', name: "Pvt. Riley", kit: "submachinegunner", health: 100},
             { x: 860, y: 540, bodyTexture: 'bodyTexture', headTexture: 'headTexture', name: "Cpl. Miller", kit: "rifler", health: 100}
         ], kitData);
 
-        this.enemies = new Squad(this);
-
+        this.enemies = new Squad(this, this.enemyBullets);
         this.enemies.spawn([
             { x: 235, y: 560, bodyTexture: 'bodyPlaceholder', headTexture: 'headPlaceholder', name: "Meanie 1", kit: "rifler", health: 100},
             { x: 300, y: 660, bodyTexture: 'bodyPlaceholder', headTexture: 'headPlaceholder', name: "Meanie 2", kit: "submachinegunner", health: 100}
@@ -92,6 +105,7 @@ export class DemoGameScene extends Phaser.Scene {
 
         const initialSoldier = this.squadMembers.getAllSprites()
         const enemyArray = this.enemies.getAllSprites();
+
 
         enemyArray.forEach(singleVictim => {
             this.physics.add.overlap(this.bullets, singleVictim, (victim, bullet) => {
@@ -107,6 +121,9 @@ export class DemoGameScene extends Phaser.Scene {
                 this.handleBulletHit(victim  as any, bullet  as any);
             })
         });
+
+        this.physics.add.collider(this.squadMembers.getAllSprites(), this.obstacles);
+        this.physics.add.collider(this.enemies.getAllSprites(), this.obstacles);
 
         this.scene.launch('SceneHud', { trackingTarget: initialSoldier});
     }
